@@ -41,6 +41,9 @@ Route::add('/poll/([0-9]*)', function($poll_id) {
         echo "Błąd wykonania zapytania do bazy";
     }
 });
+Route::add('/poll/save', function() {
+    echo "Ankieta została zapisana";
+}, 'post');
 
 Route::run('/');
 

@@ -19,7 +19,9 @@ class Question {
         echo "<h3>".$this->content."</h3>";
         
         foreach($this->answers as $answer) {
-            echo "<input type=\"radio\" name=\"".$this->id."\">".$answer."<br>";
+            $answerID = array_search($answer, $this->answers);
+            echo "<input type=\"radio\" name=\"question".$this->id."\"
+                    value=\"".$answerID."\">".$answer."<br>";
         }
         
     }

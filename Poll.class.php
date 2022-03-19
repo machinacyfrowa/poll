@@ -26,9 +26,12 @@ class Poll {
         
     }
     public function echoPoll() {
+        echo "<form action=\"/poll/save\" method=\"post\">";
         foreach($this->questions as $question) {
             $question->echoQuestion();
         }
+        echo "<input type=\"submit\">";
+        echo "</form>";
     }
 
 }
