@@ -25,6 +25,11 @@ class Poll {
         }
         
     }
+    public function echoPoll() {
+        foreach($this->questions as $question) {
+            $question->echoQuestion();
+        }
+    }
 
 }
 ?>

@@ -15,6 +15,14 @@ class Question {
 
         $this->answers[$id] = $content;
     }
+    public function echoQuestion() {
+        echo "<h3>".$this->content."</h3>";
+        
+        foreach($this->answers as $answer) {
+            echo "<input type=\"radio\" name=\"".$this->id."\">".$answer."<br>";
+        }
+        
+    }
 }
 
 ?>

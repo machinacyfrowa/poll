@@ -33,7 +33,7 @@ Route::add('/poll/([0-9]*)', function($poll_id) {
                 */
             }
             $p = new Poll($poll);
-            
+            $p->echoPoll();
         } else {
             echo "Nie istnieje ankieta o takim ID";
         }
