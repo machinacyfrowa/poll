@@ -2,6 +2,7 @@
 class Answer {
     private $id;
     private $content;
+    private $count;
     
     function __construct(int $i, string $c)
     {
@@ -11,7 +12,11 @@ class Answer {
 
     function get() : array {
         return array('id'       => $this->id,
-                     'content'  => $this->content);
+                     'content'  => $this->content,
+                     'count'    => $this->count);
+    }
+    function addCount() {
+        $this->count++;
     }
 }
 

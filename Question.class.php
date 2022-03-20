@@ -36,6 +36,11 @@ class Question {
         }
         
     }
+    public function get() : array {
+        return array(   "id"        => $this->id,
+                        "content"   => $this->content,
+                        "answers"   => $this->answers);
+    }
     private function getAnswers() {
         global $db;
         $q = $db->prepare("SELECT * FROM answer WHERE question_id = ?");
@@ -49,6 +54,15 @@ class Question {
             $answerContent = $row['content'];
             $answer = new Answer($answerID, $answerContent);
             array_push($this->answers, $answer);
+        }
+    }
+    public function addAnswerCount($id) {
+        foreach($this->answers as $answer) 
+        {
+            if($answer->get()['id'] == $id)
+            {
+                $answer->addCount();
+            }
         }
     }
     //deprecated: do usunięcia po refactoringu
