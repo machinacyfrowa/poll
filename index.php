@@ -68,6 +68,53 @@ Route::add('/poll/save', function() {
     
 }, 'post');
 
+Route::add('/poll/([0-9]*)/results', function ($poll_id) {
+    echo "Wyniki dla ankiety od id: ".$poll_id."<br>";
+    $db = new mysqli('localhost', 'root', '', 'poll');
+    $q = $db->prepare("SELECT result.id as result_id, question.id as question_id, 
+                        question.content as question_content, answer.id as answer_id, 
+                        answer.content as answer_content
+                        FROM result 
+                        LEFT JOIN resultanswer on resultanswer.result = result.id
+                        LEFT JOIN answer on resultanswer.answer = answer.id
+                        LEFT JOIN question on answer.question_id = question.id
+                        WHERE question.poll_id = ?");
+    
+    $q->bind_param("i", $poll_id);
+    $q->execute();
+    $result = $q->get_result();
+    $questions = array();
+    $answerContent = array();
+    while($row = $result->fetch_assoc()) {
+        $questionID = $row['question_id'];
+        $questionContent = $row['question_content'];
+        $answerID = $row['answer_id'];
+        
+        $questions[$questionID]['content'] = $questionContent;
+        if(!isset($questions[$questionID]['answers']))
+            $questions[$questionID]['answers'] = array();
+        array_push($questions[$questionID]['answers'], $answerID);
+        $answerContent[$answerID] = $row['answer_content'];
+    }
+    foreach($questions as $question) {
+        echo "Treść pytania: ".$question['content']."<br>";
+
+        $answerCount = array();
+        foreach($question['answers'] as $answer) {
+            if(!isset($answerCount[$answer]))
+                $answerCount[$answer] = 1;
+            else 
+                $answerCount[$answer] += 1;
+        }
+        $questionAnswerSum = array_sum($answerCount);
+        foreach($answerCount as $key => $count) {
+            $answer = $answerContent[$key];
+            $percent = round(($count / $questionAnswerSum)*100, 3);
+            echo "Odpowiedzi \"$answer\" udzielono $count razy, co stanowi $percent% wszystkich odpowiedzi.<br>";
+        }
+        echo "<br>";
+    }
+});
 //uruchom routing (musi byc na końcu po deklaracji dostępnych ścieżek)
 Route::run('/');
 
