@@ -44,8 +44,28 @@ Route::add('/poll/([0-9]*)', function($poll_id) { //dodajemy uniwersaną ścież
 });
 
 Route::add('/poll/save', function() {
-    echo "Ankieta została zapisana";
     //TODO: faktycznie przyjmij dane i zapisz odpowiedzi do bazy danych
+    $db = new mysqli('localhost', 'root', '', 'poll');
+    $q = $db->prepare("INSERT INTO result VALUES (NULL, NULL)");
+    //utwórz wpis w bazie danych o nowej wypełnionej ankiecie
+    $result = $q->execute();
+    //pobierz id nowej wypełnionej ankiety
+    $resultID = $db->insert_id;
+    $answers = array();
+    foreach($_POST as $key => $item) {
+        if(strpos($key, "question") == 0) {
+            //tu są tylko odpowiedzi na pytania
+            array_push($answers, $item);
+        }
+    }
+    $q = $db->prepare("INSERT INTO resultanswer VALUES (NULL, ?, ?)");
+    
+    foreach($answers as $answerID) {
+        $q->bind_param("ii", $resultID, $answerID);
+        $q->execute();
+    }
+    echo "Ankieta została zapisana";
+    
 }, 'post');
 
 //uruchom routing (musi byc na końcu po deklaracji dostępnych ścieżek)
