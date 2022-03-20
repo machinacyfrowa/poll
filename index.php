@@ -1,6 +1,7 @@
 <?php
 require_once('Route.php'); //klasa do routingu - przetwarza tzw. friendly url
 require_once('Poll.class.php'); //podstawowa klasa ankiety
+$db = new mysqli('localhost', 'root', '', 'poll');
 
 use Steampixel\Route; //importujemy przestrzeń nazw
 
