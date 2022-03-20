@@ -42,6 +42,7 @@ class Question {
         $q->bind_param("i", $this->id);
         $q->execute();
         $result = $q->get_result();
+        $this->answers = array();
         while($row = $result->fetch_assoc()) {
             //iteruj przez odpowiedzi na to pytanie
             $answerID = $row['id'];
@@ -61,12 +62,13 @@ class Question {
         //dla każdej z zapisanych odpowiedzi
         foreach($this->answers as $answer) {
             //znajdz id dla danej odpowiedzi
-            $answerID = array_search($answer, $this->answers);
+            $answerID = $answer->get()['id'];
+            $answerContent = $answer->get()['content'];
             //wydrukuj  guzik typu radio i przypisz do niego zarówno
             //name czyli identyfikator pytania
             //oraz value czyli identyfikator udzielonej odpowiedzi
             echo "<input type=\"radio\" name=\"question".$this->id."\"
-                    value=\"".$answerID."\">".$answer."<br>";
+                    value=\"".$answerID."\">".$answerContent."<br>";
         }
         
     }

@@ -8,28 +8,38 @@ class Poll {
     //tablica z pytaniami w formie obiektów klasy Question
     private $questions;
 
-    function __construct($data)
+    function __construct($id = 0, $title = "")
     {
-        //szykujemy pustą tablicę na pytania
-        $this->questions = array();
-        foreach($data as $row) {
-            //jeśli nie mamy jeszcze id i nazwy ankiety to pobieramy z danych
-            if(!isset($this->id)) {
-                $this->id = $row['poll_id'];
-                $this->title = $row['poll_title'];
+        global $db;
+        if($id == 0) {
+            //tworzymy nową ankietę w bazie
+            $q = $db->prepare("INSERT INTO poll VALUES (NULL, ?)");
+            $q->bind_param("s", $title);
+            $q->execute();
+            $this->id = $db->insert_id;
+            //szykujemy pustą tablicę na pytania
+            $this->questions = array();
+        } else {
+            //zaczytaj ankietę z bazy danych
+            $q = $db->prepare("SELECT * FROM poll WHERE id = ?");
+            $q->bind_param("i", $id);
+            $q->execute();
+            $result = $q->get_result();
+            $row = $result->fetch_assoc();
+            $this->id = $id;
+            $this->title = $row['title'];
+            //szykujemy pustą tablicę na pytania
+            $this->questions = array();
+            //łądujemy pytania z bazy danych 
+            $q = $db->prepare("SELECT * FROM question WHERE poll_id = ?");
+            $q->bind_param("i", $this->id);
+            $q->execute();
+            $result = $q->get_result();
+            while($row = $result->fetch_assoc()) {
+                $questionID = $row['id'];
+                $question = new Question($questionID);
+                array_push($this->questions, $question);
             }
-            //pobierz id pytania
-            $questionID = $row['question_id'];
-            //jeśli nie ma tego pytania to stwórz "puste" - sam id i treść - bez odpowiedzi
-            if(!isset($this->questions[$questionID])) {
-                $questionContent = $row['question_content'];
-                $this->questions[$questionID] = 
-                    new Question($questionID, $questionContent);
-            } 
-            //dopisz odpowiedz do pytania
-            $this->questions[$questionID]->
-                    addAnswer($row['answer_id'], $row['answer_content']);
-            
         }
         
     }
